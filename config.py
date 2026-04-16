@@ -51,8 +51,8 @@ UPSTREAM_BRANCH = getenv("UPSTREAM_BRANCH", "Master")
 GIT_TOKEN = getenv("GIT_TOKEN")  # Only required for private repos
 
 # Support & community
-SUPPORT_CHANNEL = getenv("SUPPORT_CHANNEL", "https://t.me/heroku_club")
-SUPPORT_CHAT = getenv("SUPPORT_CHAT", "https://t.me/nobita_support")
+SUPPORT_CHANNEL = getenv("SUPPORT_CHANNEL", "https://t.me/about_deadly_venom")
+SUPPORT_CHAT = getenv("SUPPORT_CHAT", "https://t.me/+w00BnR_Z_rA5NTY1")
 
 # Assistant auto-leave =Voice Chat and Chat's setting
 AUTO_LEAVING_ASSISTANT = bool(getenv("AUTO_LEAVING_ASSISTANT", False))
@@ -102,18 +102,18 @@ START_IMG_URLS = [
     "https://files.catbox.moe/i84mwm.jpg",
 ]
 
-START_IMG_URL = getenv("START_IMG_URL", "https://files.catbox.moe/x3a3nc.jpg")
-PING_IMG_URL = getenv("PING_IMG_URL", "https://files.catbox.moe/x3a3nc.jpg")
-PLAYLIST_IMG_URL = getenv("PLAYLIST_IMG_URL", "https://files.catbox.moe/v7u8ji.jpg")
-STATS_IMG_URL = getenv("STATS_IMG_URL", "https://files.catbox.moe/7g7j9f.jpg")
-TELEGRAM_AUDIO_URL = getenv("TELEGRAM_AUDIO_URL", "https://files.catbox.moe/fahcob.jpg")
-TELEGRAM_VIDEO_URL = getenv("TELEGRAM_VIDEO_URL", "https://files.catbox.moe/gy14qk.jpg")
-STREAM_IMG_URL = getenv("STREAM_IMG_URL", "https://files.catbox.moe/h0m0wz.jpg")
-SOUNCLOUD_IMG_URL = getenv("SOUNCLOUD_IMG_URL", "https://files.catbox.moe/ieduw9.jpg")
-YOUTUBE_IMG_URL = getenv("YOUTUBE_IMG_URL", "https://files.catbox.moe/rnwmfw.jpg")
-SPOTIFY_ARTIST_IMG_URL = getenv("SPOTIFY_ARTIST_IMG_URL", "https://files.catbox.moe/66ye0m.jpg")
-SPOTIFY_ALBUM_IMG_URL = getenv("SPOTIFY_ALBUM_IMG_URL", "https://files.catbox.moe/66ye0m.jpg")
-SPOTIFY_PLAYLIST_IMG_URL = getenv("SPOTIFY_PLAYLIST_IMG_URL", "https://files.catbox.moe/66ye0m.jpg")
+START_IMG_URL = getenv("START_IMG_URL", "https://i.ibb.co/278g1GPL/x.jpg")
+PING_IMG_URL = getenv("PING_IMG_URL", "https://i.ibb.co/fYfMDyGk/x.jpg")
+PLAYLIST_IMG_URL = getenv("PLAYLIST_IMG_URL", "https://i.ibb.co/XxmnmSvP/x.jpg")
+STATS_IMG_URL = getenv("STATS_IMG_URL", "https://i.ibb.co/XxmnmSvP/x.jpg")
+TELEGRAM_AUDIO_URL = getenv("TELEGRAM_AUDIO_URL", "https://i.ibb.co/XxmnmSvP/x.jpg")
+TELEGRAM_VIDEO_URL = getenv("TELEGRAM_VIDEO_URL", "https://i.ibb.co/XxmnmSvP/x.jpg")
+STREAM_IMG_URL = getenv("STREAM_IMG_URL", "https://i.ibb.co/XxmnmSvP/x.jpg")
+SOUNCLOUD_IMG_URL = getenv("SOUNCLOUD_IMG_URL", "https://i.ibb.co/XxmnmSvP/x.jpg")
+YOUTUBE_IMG_URL = getenv("YOUTUBE_IMG_URL", "https://i.ibb.co/XxmnmSvP/x.jpg")
+SPOTIFY_ARTIST_IMG_URL = getenv("SPOTIFY_ARTIST_IMG_URL", "https://i.ibb.co/XxmnmSvP/x.jpg")
+SPOTIFY_ALBUM_IMG_URL = getenv("SPOTIFY_ALBUM_IMG_URL", "https://i.ibb.co/XxmnmSvP/x.jpg")
+SPOTIFY_PLAYLIST_IMG_URL = getenv("SPOTIFY_PLAYLIST_IMG_URL", "https://i.ibb.co/XxmnmSvP/x.jpg")
 
 # Convert time (hh:mm:ss) to seconds
 def time_to_seconds(time: str) -> int:
