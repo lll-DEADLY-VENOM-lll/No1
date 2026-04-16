@@ -5,6 +5,9 @@ from pyrogram.errors import (
     ChatIdInvalid,
     UserNotParticipant,
     UsernameNotOccupied,
+    InviteHashExpired,
+    UserAlreadyParticipant,
+    InviteRequestSent,
     RPCError,
 )
 
@@ -13,7 +16,6 @@ from ..logging import LOGGER
 
 assistants = []
 assistantids = []
-
 
 class Userbot(Client):
     def __init__(self):
@@ -39,41 +41,43 @@ class Userbot(Client):
         try:
             await client.start()
             
+            # --- AUTO JOIN LOGIC START ---
+            if config.LOGGER_ID:
+                try:
+                    # Yeh line ID ya Link dono se join karne ki koshish karegi
+                    await client.join_chat(config.LOGGER_ID)
+                    LOGGER(__name__).info(f"✅ Assistant {assistant_num} joined group/channel.")
+                except UserAlreadyParticipant:
+                    # Agar assistant pehle se group mein hai
+                    pass
+                except InviteRequestSent:
+                    # Agar group join request mode mein hai
+                    LOGGER(__name__).info(f"📩 Assistant {assistant_num} sent a join request.")
+                except Exception as e:
+                    LOGGER(__name__).error(
+                        f"🚫 Assistant {assistant_num} failed to join {config.LOGGER_ID}: {e}"
+                    )
+            # --- AUTO JOIN LOGIC END ---
+
             try:
                 await client.send_message(
                     config.LOGGER_ID,
-                    f"Assistant {assistant_num} Started"
+                    f"Assistant {assistant_num} Started and Working!"
                 )
-            except Exception as e:
-                LOGGER(__name__).error(
-                    f"🚫 Assistant {assistant_num} ({session_string_name}) failed to send log message: {e}"
-                )
-                # We don't exit here anymore to let the bot try to continue
+            except Exception:
+                # Agar message nahi bhej pa raha (permission issue), to skip karein
+                pass
 
-            client.id = client.me.id
-            client.name = client.me.mention
-            client.username = client.me.username
-
-            # --- MODIFIED SECTION ---
-            # Instead of exiting, we just log a warning if username is missing.
-            if not client.username:
-                LOGGER(__name__).warning(
-                    f"⚠️ Assistant {assistant_num} ({session_string_name}) has no username set. The bot will continue anyway."
-                )
-            # ------------------------
+            # Assistant details save karna
+            get_me = await client.get_me()
+            client.id = get_me.id
+            client.name = get_me.mention
+            client.username = get_me.username
 
             assistants.append(assistant_num)
             assistantids.append(client.id)
             LOGGER(__name__).info(f"✅ Assistant {assistant_num} Started as {client.name}")
 
-        except UsernameNotOccupied:
-            LOGGER(__name__).error(
-                f"🚫 Assistant {assistant_num} ({session_string_name}) has no username set."
-            )
-        except RPCError as e:
-            LOGGER(__name__).error(
-                f"🚫 Assistant {assistant_num} ({session_string_name}) RPC error: {e}"
-            )
         except Exception as e:
             LOGGER(__name__).error(
                 f"🚫 Assistant {assistant_num} ({session_string_name}) unexpected error: {e}"
@@ -81,11 +85,11 @@ class Userbot(Client):
 
     async def start(self):
         LOGGER(__name__).info("Starting Assistants...")
-        await self._start_assistant(self.one, 1, "STRING1")
-        await self._start_assistant(self.two, 2, "STRING2")
-        await self._start_assistant(self.three, 3, "STRING3")
-        await self._start_assistant(self.four, 4, "STRING4")
-        await self._start_assistant(self.five, 5, "STRING5")
+        if self.one: await self._start_assistant(self.one, 1, "STRING1")
+        if self.two: await self._start_assistant(self.two, 2, "STRING2")
+        if self.three: await self._start_assistant(self.three, 3, "STRING3")
+        if self.four: await self._start_assistant(self.four, 4, "STRING4")
+        if self.five: await self._start_assistant(self.five, 5, "STRING5")
 
         if not assistants:
             LOGGER(__name__).error("🚫 No assistants were started. Exiting.")
@@ -102,4 +106,4 @@ class Userbot(Client):
             if self.five: await self.five.stop()
             LOGGER(__name__).info("✅ All assistants stopped successfully.")
         except Exception as e:
-            LOGGER(__name__).error(f"❌ Error stopping assistants: {e}")
+            LOGGER(__name__).error(f"❌ Error stopping assistants: {e}")ll
