@@ -7,7 +7,7 @@ import yt_dlp
 from typing import Union, Optional, Tuple, List
 from pyrogram.enums import MessageEntityType
 from pyrogram.types import Message
-from py_yt import VideosSearch, Playlist
+from youtubesearchpython.__future__ import VideosSearch, Playlist
 from AnonMusic.utils.formatters import time_to_seconds
 from AnonMusic import LOGGER
 
