@@ -38,8 +38,7 @@ class Userbot(Client):
 
         try:
             await client.start()
-            assistants.append(assistant_num)
-
+            
             try:
                 await client.send_message(
                     config.LOGGER_ID,
@@ -49,18 +48,21 @@ class Userbot(Client):
                 LOGGER(__name__).error(
                     f"🚫 Assistant {assistant_num} ({session_string_name}) failed to send log message: {e}"
                 )
-                sys.exit(1)
+                # We don't exit here anymore to let the bot try to continue
 
             client.id = client.me.id
             client.name = client.me.mention
             client.username = client.me.username
 
+            # --- MODIFIED SECTION ---
+            # Instead of exiting, we just log a warning if username is missing.
             if not client.username:
-                LOGGER(__name__).error(
-                    f"⚙️ Set a username for Assistant {assistant_num} ({session_string_name}) and restart the bot."
+                LOGGER(__name__).warning(
+                    f"⚠️ Assistant {assistant_num} ({session_string_name}) has no username set. The bot will continue anyway."
                 )
-                sys.exit(1)
+            # ------------------------
 
+            assistants.append(assistant_num)
             assistantids.append(client.id)
             LOGGER(__name__).info(f"✅ Assistant {assistant_num} Started as {client.name}")
 
@@ -68,17 +70,14 @@ class Userbot(Client):
             LOGGER(__name__).error(
                 f"🚫 Assistant {assistant_num} ({session_string_name}) has no username set."
             )
-            sys.exit(1)
         except RPCError as e:
             LOGGER(__name__).error(
                 f"🚫 Assistant {assistant_num} ({session_string_name}) RPC error: {e}"
             )
-            sys.exit(1)
         except Exception as e:
             LOGGER(__name__).error(
                 f"🚫 Assistant {assistant_num} ({session_string_name}) unexpected error: {e}"
             )
-            sys.exit(1)
 
     async def start(self):
         LOGGER(__name__).info("Starting Assistants...")
@@ -91,7 +90,7 @@ class Userbot(Client):
         if not assistants:
             LOGGER(__name__).error("🚫 No assistants were started. Exiting.")
             sys.exit(1)
-        LOGGER(__name__).info(f"✅ {len(assistants)} assistant started.")
+        LOGGER(__name__).info(f"✅ {len(assistants)} assistant(s) started.")
 
     async def stop(self):
         LOGGER(__name__).info("Stopping Assistants...")
