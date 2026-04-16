@@ -8,7 +8,8 @@ from pathlib import Path
 from typing import Union, Optional, Tuple, List
 from pyrogram.enums import MessageEntityType
 from pyrogram.types import Message
-from py_yt import VideosSearch, Playlist
+# Corrected Import: py_yt ko youtubesearchpython se replace kiya gaya hai
+from youtubesearchpython.__future__ import VideosSearch, Playlist
 from AnonMusic.utils.formatters import time_to_seconds
 from AnonMusic import LOGGER
 
@@ -154,7 +155,7 @@ class YouTubeAPI:
     async def details(self, link: str, videoid: bool = False):
         if videoid: link = self.base + link
         try:
-            # Clean link for py_yt
+            # Clean link for search
             link = link.split("&")[0]
             results = VideosSearch(link, limit=1)
             search_res = await results.next()
@@ -168,7 +169,8 @@ class YouTubeAPI:
                 res["thumbnails"][0]["url"].split("?")[0],
                 res["id"]
             )
-        except Exception:
+        except Exception as e:
+            LOGGER.error(f"Details error: {e}")
             return None
 
     async def formats(self, link: str, videoid: bool = False):
@@ -220,7 +222,13 @@ class YouTubeAPI:
     async def playlist(self, link, limit, user_id, videoid: bool = False):
         if videoid: link = self.listbase + link
         try:
-            plist = await Playlist.get(link)
-            return [v["id"] for v in plist.get("videos", [])[:limit] if v.get("id")]
-        except:
+            # Fixed Playlist Fetching logic for youtubesearchpython
+            playlist = Playlist(link)
+            while playlist.hasMoreVideos:
+                await playlist.getNext()
+                if len(playlist.videos) >= limit:
+                    break
+            return [v["id"] for v in playlist.videos[:limit] if v.get("id")]
+        except Exception as e:
+            LOGGER.error(f"Playlist error: {e}")
             return []
