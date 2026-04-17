@@ -24,7 +24,7 @@ from AnonMusic.utils.inline import help_pannel, private_panel, start_panel
 from config import BANNED_USERS
 from strings import get_string
 
-# 🎆 Message Effects IDs
+# 🎆 Latest Message Effects IDs (Only for latest Pyrogram)
 EFFECT_ID = [
     5104841245755180586,
     5107584321108051014,
@@ -54,7 +54,7 @@ REACTIONS = ["🍓", "🔥", "❤️", "⚡", "🎉", "🥰", "👏", "💫", "�
 async def start_pm(client, message: Message, _):
     await add_served_user(message.from_user.id)
 
-    # 🍓 Random reaction
+    # 🍓 Random reaction with big=True
     try:
         await message.react(random.choice(REACTIONS), big=True)
     except:
@@ -90,24 +90,25 @@ async def start_pm(client, message: Message, _):
             key = InlineKeyboardMarkup([[InlineKeyboardButton(_["S_B_8"], url=data["link"]), InlineKeyboardButton(_["S_B_9"], url=config.SUPPORT_CHAT)]])
             
             await m.delete()
+            # Latest Features Enabled here
             await app.send_photo(
                 chat_id=message.chat.id,
                 photo=data["thumbnails"][0]["url"].split("?")[0],
                 has_spoiler=True,
-                protect_content=True, # <--- Ye tabhi chalega jab update hoga
+                protect_content=True,
                 caption=searched_text,
                 reply_markup=key,
             )
             return
 
-    # 🌄 Normal Start with Effects
+    # 🌄 Normal Start with Effects & Protection
     out = private_panel(_)
 
     await message.reply_photo(
         photo=random.choice(Kanha),
         has_spoiler=True,
-        protect_content=True, # <--- Content protection
-        message_effect_id=random.choice(EFFECT_ID), # <--- Emojis Pop-up effect
+        protect_content=True,
+        message_effect_id=random.choice(EFFECT_ID),
         caption=_["start_2"].format(message.from_user.mention, app.mention),
         reply_markup=InlineKeyboardMarkup(out),
     )
@@ -117,6 +118,8 @@ async def start_pm(client, message: Message, _):
 async def start_gp(client, message: Message, _):
     out = start_panel(_)
     uptime = int(time.time() - _boot_)
+    
+    # Latest Features for Group
     await message.reply_photo(
         photo=config.START_IMG_URL,
         has_spoiler=True,
@@ -125,5 +128,3 @@ async def start_gp(client, message: Message, _):
         reply_markup=InlineKeyboardMarkup(out),
     )
     await add_served_chat(message.chat.id)
-
-# ... (Welcome handler same rahega)
