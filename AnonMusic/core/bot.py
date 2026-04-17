@@ -1,10 +1,14 @@
-from pyrogram import Client, errors
+from pyrogram import Client, errors, filters # filters add kiya
 from pyrogram.enums import ChatMemberStatus, ParseMode
 from pyrogram.types import Chat
-
+from pyrogram.handlers import MessageHandler # Handler add kiya
+from openai import AsyncOpenAI # AI add kiya
+import os
 import config
 from ..logging import LOGGER
 
+# OpenAI Setup
+aio_client = AsyncOpenAI(api_key=config.OPENAI_API_KEY)
 
 class Anony(Client):
     def __init__(self):
@@ -19,6 +23,21 @@ class Anony(Client):
             max_concurrent_transmissions=7,
         )
 
+    # --- AI BRAIN FUNCTION ---
+    async def get_ai_reply(self, text):
+        try:
+            response = await aio_client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": "You are a beautiful Indian girl named Aaru. Talk sweetly in Hinglish. Be friendly and helpful. Keep replies short."},
+                    {"role": "user", "content": text}
+                ]
+            )
+            return response.choices[0].message.content
+        except Exception as e:
+            LOGGER(__name__).error(f"AI Error: {e}")
+            return "Ji, kahiye? 😊"
+
     async def start(self):
         try:
             await super().start()
@@ -27,6 +46,29 @@ class Anony(Client):
             self.name = f"{me.first_name} {(me.last_name or '')}".strip()
             self.username = me.username
             self.mention = me.mention
+
+            # --- AI HANDLER REGISTRATION ---
+            async def main_bot_ai_handler(client, message):
+                if not message.text:
+                    return
+
+                # Condition: Agar bot ko tag kiya jaye ya bot ke message par reply ho
+                is_tagged = False
+                if message.mentioned:
+                    is_tagged = True
+                elif message.reply_to_message and message.reply_to_message.from_user:
+                    if message.reply_to_message.from_user.id == self.id:
+                        is_tagged = True
+
+                if is_tagged:
+                    await client.send_chat_action(message.chat.id, "typing")
+                    reply = await self.get_ai_reply(message.text)
+                    await message.reply_text(reply)
+
+            # Is handler ko register karna
+            self.add_handler(MessageHandler(main_bot_ai_handler, filters.group & filters.text))
+            LOGGER(__name__).info(f"✅ AI Chat System Active for {self.name}")
+            # -------------------------------
 
             LOGGER(__name__).info(f"✅ Bot logged in as {self.name} (@{self.username})")
 
@@ -41,33 +83,8 @@ class Anony(Client):
                         f"🔰 ᴜsᴇʀɴᴀᴍᴇ : @{self.username}"
                     ),
                 )
-            except (errors.PeerIdInvalid, errors.ChannelInvalid) as e:
-                LOGGER(__name__).error(
-                    "❌ Cannot send log message. Make sure bot is added to the log group and has permission."
-                )
-                raise SystemExit(1)
             except Exception as e:
-                LOGGER(__name__).error(
-                    f"❌ Unexpected error while sending startup message: {type(e).__name__}: {e}"
-                )
-                raise SystemExit(1)
-
-            # Check admin permission in log group
-            try:
-                member = await self.get_chat_member(config.LOGGER_ID, self.id)
-                if member.status != ChatMemberStatus.ADMINISTRATOR:
-                    LOGGER(__name__).error(
-                        "❌ Please promote the bot as an admin in the log group."
-                    )
-                    raise SystemExit(1)
-            except errors.ChatAdminRequired:
-                LOGGER(__name__).error("❌ Bot lacks admin rights in the log group.")
-                raise SystemExit(1)
-            except Exception as e:
-                LOGGER(__name__).error(
-                    f"❌ Failed to check bot's admin status: {type(e).__name__}: {e}"
-                )
-                raise SystemExit(1)
+                LOGGER(__name__).error(f"❌ Startup log failed: {e}")
 
             LOGGER(__name__).info("✅ Bot started successfully.")
 
