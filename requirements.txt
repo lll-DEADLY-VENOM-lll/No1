@@ -28,7 +28,6 @@ uvloop
 yt-dlp
 youtube-search
 pyrogram>=2.0.106
-pyrogram>=2.0.106
 tgcrypto
 youtube-search-python>=1.6.6
 pytgcalls>=1.1.2
