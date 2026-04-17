@@ -30,7 +30,7 @@ BOT_DOCS =  getenv("BOT_DOCS", "https://radha-music.vercel.app")
 MINI_APP =  getenv("MINI_APP", "https://heroku-club.vercel.app")
 
 COOKIES_URL = getenv("COOKIES_URL", None)
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = "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"
 
 # Limits and durations
 DURATION_LIMIT_MIN = int(getenv("DURATION_LIMIT", 300))  # Max duration in minutes
