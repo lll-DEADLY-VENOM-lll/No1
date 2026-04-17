@@ -16,7 +16,6 @@ pillow==11.0.0
 psutil
 py-tgcalls==2.2.0
 pykeyboard
-https://github.com/KurimuzonAkuma/pyrogram/archive/v2.1.23.zip
 python-dotenv
 pyyaml
 pytz
@@ -30,3 +29,4 @@ uvloop
 yt-dlp
 youtube-search
 youtube-search-python
+pyrogram>=2.0.106
