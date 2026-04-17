@@ -1,13 +1,10 @@
-from pyrogram import Client, errors, filters # filters add kiya
-from pyrogram.enums import ChatMemberStatus, ParseMode
-from pyrogram.types import Chat
-from pyrogram.handlers import MessageHandler # Handler add kiya
-from openai import AsyncOpenAI # AI add kiya
-import os
+from pyrogram import Client, errors, filters
+from pyrogram.enums import ChatMemberStatus, ParseMode, ChatAction # ChatAction add kiya
+from pyrogram.handlers import MessageHandler
+from openai import AsyncOpenAI
 import config
 from ..logging import LOGGER
 
-# OpenAI Setup
 aio_client = AsyncOpenAI(api_key=config.OPENAI_API_KEY)
 
 class Anony(Client):
@@ -23,13 +20,12 @@ class Anony(Client):
             max_concurrent_transmissions=7,
         )
 
-    # --- AI BRAIN FUNCTION ---
     async def get_ai_reply(self, text):
         try:
             response = await aio_client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
-                    {"role": "system", "content": "You are a beautiful Indian girl named Aaru. Talk sweetly in Hinglish. Be friendly and helpful. Keep replies short."},
+                    {"role": "system", "content": "You are a sweet Indian girl named Aaru. Talk in Hinglish."},
                     {"role": "user", "content": text}
                 ]
             )
@@ -43,16 +39,11 @@ class Anony(Client):
             await super().start()
             me = await self.get_me()
             self.id = me.id
-            self.name = f"{me.first_name} {(me.last_name or '')}".strip()
             self.username = me.username
             self.mention = me.mention
 
-            # --- AI HANDLER REGISTRATION ---
             async def main_bot_ai_handler(client, message):
-                if not message.text:
-                    return
-
-                # Condition: Agar bot ko tag kiya jaye ya bot ke message par reply ho
+                if not message.text: return
                 is_tagged = False
                 if message.mentioned:
                     is_tagged = True
@@ -61,40 +52,17 @@ class Anony(Client):
                         is_tagged = True
 
                 if is_tagged:
-                    await client.send_chat_action(message.chat.id, "typing")
+                    # FIX: Yahan ChatAction.TYPING use kiya hai
+                    await client.send_chat_action(message.chat.id, ChatAction.TYPING)
                     reply = await self.get_ai_reply(message.text)
                     await message.reply_text(reply)
 
-            # Is handler ko register karna
             self.add_handler(MessageHandler(main_bot_ai_handler, filters.group & filters.text))
-            LOGGER(__name__).info(f"✅ AI Chat System Active for {self.name}")
-            # -------------------------------
-
-            LOGGER(__name__).info(f"✅ Bot logged in as {self.name} (@{self.username})")
-
-            # Try sending a startup message
-            try:
-                await self.send_message(
-                    chat_id=config.LOGGER_ID,
-                    text=(
-                        f"<u><b>» {self.mention} ʙᴏᴛ sᴛᴀʀᴛᴇᴅ :</b></u>\n\n"
-                        f"🆔 ɪᴅ : <code>{self.id}</code>\n"
-                        f"📛 ɴᴀᴍᴇ : {self.name}\n"
-                        f"🔰 ᴜsᴇʀɴᴀᴍᴇ : @{self.username}"
-                    ),
-                )
-            except Exception as e:
-                LOGGER(__name__).error(f"❌ Startup log failed: {e}")
-
-            LOGGER(__name__).info("✅ Bot started successfully.")
+            LOGGER(__name__).info(f"✅ AI System Ready for @{self.username}")
 
         except Exception as e:
             LOGGER(__name__).exception(f"❌ Failed to start bot: {e}")
             raise SystemExit(1)
 
     async def stop(self):
-        try:
-            await super().stop()
-            LOGGER(__name__).info("🛑 Bot stopped successfully.")
-        except Exception as e:
-            LOGGER(__name__).exception(f"❌ Error during shutdown: {e}")
+        await super().stop()
